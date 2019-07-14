@@ -1,3 +1,7 @@
+/**
+ * 定義一個 scene，用成員變數儲存 scene 上面的物件
+ * override preload, create, update 函式
+ */
 class Scene1 extends Phaser.Scene {
     constructor() {
         super();
@@ -21,8 +25,20 @@ class Scene1 extends Phaser.Scene {
     }
     create() {
         this.add.image(400, 300, 'sky');
+        //沒有狀態，不需控制的物件，如 platforms, stars，一般直接
+        //在scene裏面建立就好
+        this.platforms = this.physics.add.staticGroup();
+        this.platforms.create(600, 400, 'ground');
+        this.platforms.create(50, 250, 'ground');
+        this.platforms.create(750, 220, 'ground');
+        this.platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
-        this.platforms=new Platforms(this);
+        this.stars = this.physics.add.group({
+            key: 'star', repeat: 11, setXY: { x: 12, y: 0, stepX: 70 }
+        });
+        this.stars.children.iterate(function (child) {
+            child.setBounceY(0.3);
+        });
 
         this.anims.create({
             key: 'left',
@@ -62,17 +78,12 @@ class Scene1 extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
-
+        //主角、怪物等等通常會抽出去
         this.player = new Player(this, 100, 450);
+        
         this.physics.add.collider(this.player, this.platforms);
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.stars = this.physics.add.group({
-            key: 'star', repeat: 11, setXY: { x: 12, y: 0, stepX: 70 }
-        });
         this.physics.add.collider(this.stars, this.platforms);
-        this.stars.children.iterate(function (child) {
-            child.setBounceY(0.3);
-        });
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
     }
 
