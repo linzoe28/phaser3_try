@@ -6,106 +6,77 @@ class Scene1 extends Phaser.Scene {
     constructor() {
         super();
         this.player = null;
-        this.platforms = null;
         this.cursors = null;
-        this.stars = null;
+        this.obstacle1s = null;
+        this.obstacle2s = null;
+        this.obstacle3s = null;
     }
     preload() {
         this.load.image('bg', 'assets/background.png');
         this.load.image('ground', 'assets/platform.png');
-        this.load.spritesheet('dude',
-            'assets/dude.png',
-            { frameWidth: 32, frameHeight: 48 }
-        );
-        this.load.image('star', 'assets/star.png');
-        this.load.spritesheet('cat',
-            'assets/cat.png',
-            { frameWidth: 32, frameHeight: 40 }
+        this.load.image('obstacle1', 'assets/obstacle1.png');
+        this.load.image('obstacle2', 'assets/obstacle2.png');
+        this.load.image('obstacle3', 'assets/obstacle3.png');
+        this.load.spritesheet('ufo',
+            'assets/UFO2.png',
+            { frameWidth: 83, frameHeight: 73 }
         );
     }
     create() {
         this.add.image(400, 200, 'bg');
         //沒有狀態，不需控制的物件，如 platforms, stars，一般直接
         //在scene裏面建立就好
-        this.platforms = this.physics.add.staticGroup();
-        this.platforms.create(600, 400, 'ground');
-        this.platforms.create(50, 250, 'ground');
-        this.platforms.create(750, 220, 'ground');
-        this.platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+        this.obstacle3s = this.physics.add.staticGroup();
+        this.obstacle3s.create(500, 150, 'obstacle3').setScale(0.4).refreshBody();
+        this.obstacle3s.create(1000, 350, 'obstacle3').setScale(0.3).refreshBody();
+        this.obstacle3s.create(1200, 100, 'obstacle3').setScale(0.4).refreshBody();
+        this.obstacle3s.create(900, 350, 'obstacle3').setScale(0.3).refreshBody();
 
-        this.stars = this.physics.add.group({
-            key: 'star', repeat: 11, setXY: { x: 12, y: 0, stepX: 70 }
+        this.obstacle1s = this.physics.add.group({
+            key: 'obstacle1', repeat: 2, setXY: { x: 50, y: 100, stepX: 750, stepY: 40 }
         });
-        this.stars.children.iterate(function (child) {
-            child.setBounceY(0.3);
-        });
-
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'turn',
-            frames: [{ key: 'dude', frame: 4 }],
-            frameRate: 20
+        this.obstacle2s = this.physics.add.group({
+            key: 'obstacle2', repeat: 2, setXY: { x: 200, y: 350, stepX: 800, stepY: -100 }
         });
 
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
+        // this.anims.create({
+        //     key: 'catleft',
+        //     frames: this.anims.generateFrameNumbers('cat', { start: 9, end: 16 }),
+        //     frameRate: 10,
+        //     repeat: -1
+        // });
+        // this.anims.create({
+        //     key: 'catturn',
+        //     frames: [{ key: 'cat', frame: 8 }],
+        //     frameRate: 20
+        // });
 
-
-        this.anims.create({
-            key: 'catleft',
-            frames: this.anims.generateFrameNumbers('cat', { start: 9, end: 16 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'catturn',
-            frames: [{ key: 'cat', frame: 8 }],
-            frameRate: 20
-        });
-
-        this.anims.create({
-            key: 'catright',
-            frames: this.anims.generateFrameNumbers('cat', { start: 0, end: 7 }),
-            frameRate: 10,
-            repeat: -1
-        });
+        // this.anims.create({
+        //     key: 'catright',
+        //     frames: this.anims.generateFrameNumbers('cat', { start: 0, end: 7 }),
+        //     frameRate: 10,
+        //     repeat: -1
+        // });
         //主角、怪物等等通常會抽出去
-        this.player = new Player(this, 100, 450);
-        
-        this.physics.add.collider(this.player, this.platforms);
+        this.player = new Player(this, 60, 350);
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.physics.add.collider(this.stars, this.platforms);
-        this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
+        this.physics.add.overlap(this.player, this.obstacle1s, this.collectStar, null, this);
+        this.physics.add.overlap(this.player, this.obstacle2s, this.collectStar, null, this);
+        this.physics.add.overlap(this.player, this.obstacle13s, this.collectStar, null, this);
     }
 
-    collectStar(player, star) {
-        star.disableBody(true, true);
+    collectStar(player, obstacle) {
+        obstacle.disableBody(true, true);
     }
 
     update() {
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160);
-            this.player.anims.play('catleft', true);
-        }
-        else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(160);
-            this.player.anims.play('catright', true);
-        }
-        else {
+        if (this.cursors.up.isDown) {
+            this.player.setVelocityY(-200);
+        } else if (this.cursors.down.isDown) {
+            this.player.setVelocityY(200);
+        } else {
             this.player.setVelocityX(0);
-            this.player.anims.play('catturn');
-        }
-        if (this.cursors.up.isDown && this.player.body.touching.down) {
-            this.player.setVelocityY(-330);
+            //this.player.anims.play('catturn');
         }
     }
 }
