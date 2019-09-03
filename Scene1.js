@@ -11,7 +11,7 @@ class Scene1 extends Phaser.Scene {
         this.stars = null;
     }
     preload() {
-        this.load.image('sky', 'assets/sky.png');
+        this.load.image('bg', 'assets/background.png');
         this.load.image('ground', 'assets/platform.png');
         this.load.spritesheet('dude',
             'assets/dude.png',
@@ -24,7 +24,7 @@ class Scene1 extends Phaser.Scene {
         );
     }
     create() {
-        this.add.image(400, 300, 'sky');
+        this.add.image(400, 200, 'bg');
         //沒有狀態，不需控制的物件，如 platforms, stars，一般直接
         //在scene裏面建立就好
         this.platforms = this.physics.add.staticGroup();
