@@ -37,10 +37,10 @@ class Scene1 extends Phaser.Scene {
         this.obstacle3s.create(900, 350, 'obstacle3').setScale(0.3).refreshBody();
 
         this.obstacle1s = this.physics.add.group({
-            key: 'obstacle1', repeat: 2, setXY: { x: 50, y: 100, stepX: 750, stepY: 40 }
+            key: 'obstacle1', repeat: 50, setXY: { x: 50, y: 100, stepX: 750, stepY: 40 }
         });
         this.obstacle2s = this.physics.add.group({
-            key: 'obstacle2', repeat: 2, setXY: { x: 200, y: 350, stepX: 800, stepY: -100 }
+            key: 'obstacle2', repeat: 50, setXY: { x: 200, y: 350, stepX: 800, stepY: -100 }
         });
 
         this.anims.create({
@@ -57,7 +57,7 @@ class Scene1 extends Phaser.Scene {
 
         //主角、怪物等等通常會抽出去
         this.player = new Player(this, 60, 350);
-        this.player.setGravityX(100);
+        //this.player.setGravityX(100);
         this.cursors = this.input.keyboard.createCursorKeys();
         this.physics.add.overlap(this.player, this.obstacle1s, this.collectStar, null, this);
         this.physics.add.overlap(this.player, this.obstacle2s, this.collectStar, null, this);
@@ -71,7 +71,9 @@ class Scene1 extends Phaser.Scene {
 
     update() {
         this.tileSprite.tilePositionX += 5;
-        
+        this.obstacle1s.setVelocityX(-100);
+        this.obstacle2s.setVelocityX(-200);
+
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-100);
             this.player.anims.play(this.animationKey, true);
